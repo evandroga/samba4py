@@ -6,12 +6,22 @@ import sys
 import fileinput
 
 def execProcess(command):
+    """Executa um processo.
+
+    Essa função recebe um comando no formato de uma string,
+    e o executa no S.O. Caso ele seje validado, grava a saída
+    em um arquivo de log e exibe no terminal do usuário em
+    tempo real.
+    """
     p = subprocess.Popen(command, shell=True, stderr=subprocess.PIPE)
     while True:
         out = p.stderr.read(1)
         if out == '' and p.poll() != None:
             break
         if out != '':
+            with open('samba4py.log', 'ab') as log:
+                log.write(out)
+                log.close()
             sys.stdout.write(out)
             sys.stdout.flush()
 
@@ -34,6 +44,10 @@ print "*******************************************************************\n"
 raw_input("Digite ENTER para continuar, ou Ctrl+C para cancelar ...")
 execProcess("clear")
 
+with open('samba4py.log', 'ab') as log:
+    log.write("01 - ATUALIZANDO O SISTEMA ...\n")
+    log.close()
+
 print "*******************************************************************"
 print "******************** ATUALIZANDO O SISTEMA ... ********************"
 print "*******************************************************************\n"
@@ -41,6 +55,10 @@ print "*******************************************************************\n"
 execProcess("apt-get update ; apt-get upgrade -y")
 
 execProcess("clear")
+
+with open('samba4py.log', 'ab') as log:
+    log.write("02 - PREPARANDO REQUIRIMENTOS E INSTALANDO PACOTES ...\n")
+    log.close()
 
 print "*******************************************************************"
 print "******** PREPARANDO REQUIRIMENTOS E INSTALANDO PACOTES ... ********"
@@ -59,6 +77,10 @@ for line in fileinput.FileInput(fstab, inplace=True, backup='.bak'):
 
 execProcess("clear")
 
+with open('samba4py.log', 'ab') as log:
+    log.write("03 - COLETANDO INFORMAÇÕS PARA PROVISIONAMENTO ...\n")
+    log.close()
+
 print "*******************************************************************"
 print "********* PREENCHA AS INFORMAÇÕES A SEGUIR PARA CONTINUAR *********"
 print "*******************************************************************\n"
@@ -74,6 +96,10 @@ password = raw_input('Crie a senha do usuário "Administrator" do Domínio, \n'
                      '(ex: Passw0rd): ')
 
 execProcess("clear")
+
+with open('samba4py.log', 'ab') as log:
+    log.write("03 - PROVISIONANDO CONTROLADOR DE DOMÍNIO PRINCIPAL ...\n")
+    log.close()
 
 print "*******************************************************************"
 print "********* PROVISIONANDO CONTROLADOR DE DOMÍNIO PRINCIPAL **********"
@@ -107,10 +133,15 @@ with open('/etc/samba/smb.conf', 'r') as file:
                                                           'dnsupdate dns\n'
 with open('/etc/samba/smb.conf', 'w') as file:
     file.writelines(data)
+    file.close()
 
 execProcess("/etc/init.d/samba restart")
 
 execProcess("clear")
+
+with open('samba4py.log', 'ab') as log:
+    log.write("***** SAMBA4 PROVISIONADO COM SUCESSO ! *****")
+    log.close()
 
 print "*******************************************************************"
 print "*************** SAMBA4 PROVISIONADO COM SUCESSO ! *****************"
