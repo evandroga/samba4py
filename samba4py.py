@@ -3,6 +3,7 @@
 
 import subprocess
 import sys
+import fileinput
 
 def execProcess(command):
     p = subprocess.Popen(command, shell=True, stderr=subprocess.PIPE)
@@ -38,6 +39,7 @@ print "******************** ATUALIZANDO O SISTEMA ... ********************"
 print "*******************************************************************\n"
 
 execProcess("apt-get update ; apt-get upgrade -y")
+
 execProcess("clear")
 
 print "*******************************************************************"
@@ -46,7 +48,15 @@ print "*******************************************************************\n"
 
 execProcess("apt-get install samba winbind acl attr ntpdate ; rm "
             "/etc/samba/smb.conf")
+
 execProcess("ntpdate a.ntp.br")
+
+fstab = "/etc/fstap"
+old = "errors=remount-ro"
+new = "errors=remount-ro,acl,user_xattr,barrier=1"
+for line in fileinput.FileInput(fstab, inplace=True, backup='.bak'):
+    line.replace(old, new)
+
 execProcess("clear")
 
 print "*******************************************************************"
@@ -62,17 +72,44 @@ domain = raw_input("Digite o nome curto do domínio (ex: exemplo): ")
 password = raw_input('Crie a senha do usuário "Administrator" do Domínio, \n'
                      'contendo letras, números e caracteres especias '
                      '(ex: Passw0rd): ')
+
 execProcess("clear")
 
 print "*******************************************************************"
-print "********* PROVISIONANDO CONTROLODAR DE DOMÍNIO PRINCIPAL **********"
+print "********* PROVISIONANDO CONTROLADOR DE DOMÍNIO PRINCIPAL **********"
 print "*******************************************************************\n"
 
 execProcess("samba-tool domain provision --server-role=dc "
             "--dns-backend=SAMBA_INTERNAL --realm="+realm+" "
             "--domain="+domain+" --adminpass="+password+" "
             "--option=\"interfaces=lo "+nic+"\" "
-            "--option=\"bind interfaces only=yes\"")
+            "--option=\"bind interfaces only=yes\" --function-level=2008_R2")
+
+with open('/etc/samba/smb.conf', 'r') as file:
+    data = file.readlines()
+    total = sum(1 for _ in file)
+    for x in range(0, total):
+        if data[x] == '[netlogon]':
+            if data[x-1] == '':
+                data[x-1] = '    dns forwarder = '+dns+'\n    server ' \
+                                                       'services = ' \
+                                                   's3fs rpc nbt wrepl ldap ' \
+                                                   'cldap kdc drepl winbind ' \
+                                                   'ntp_signd kcc dnsupdate ' \
+                                                   'dns\n'
+            else:
+                data[x-1] += '\n    dns forwarder = '+dns+'\n    server ' \
+                                                          'services = s3fs ' \
+                                                          'rpc nbt wrepl ' \
+                                                          'ldap cldap kdc ' \
+                                                          'drepl winbind ' \
+                                                          'ntp_signd kcc ' \
+                                                          'dnsupdate dns\n'
+with open('/etc/samba/smb.conf', 'w') as file:
+    file.writelines(data)
+
+execProcess("/etc/init.d/samba restart")
+
 execProcess("clear")
 
 print "*******************************************************************"
