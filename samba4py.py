@@ -16,14 +16,14 @@ def execProcess(command):
     p = subprocess.Popen(command, shell=True, stderr=subprocess.PIPE)
     while True:
         out = p.stderr.read(1)
+        log = open('samba4py.log', 'ab')
         if out == '' and p.poll() != None:
             break
         if out != '':
-            with open('samba4py.log', 'ab') as log:
-                log.write(out)
-                log.close()
             sys.stdout.write(out)
+            log.write(out)
             sys.stdout.flush()
+        log.close()
 
 print "*******************************************************************"
 print "*******************************************************************"
@@ -64,16 +64,14 @@ print "*******************************************************************"
 print "******** PREPARANDO REQUIRIMENTOS E INSTALANDO PACOTES ... ********"
 print "*******************************************************************\n"
 
-execProcess("apt-get install samba winbind acl attr ntpdate ; rm "
+execProcess("apt-get install samba winbind acl attr ntpdate -y ; rm "
             "/etc/samba/smb.conf")
 
 execProcess("ntpdate a.ntp.br")
 
-fstab = "/etc/fstap"
-old = "errors=remount-ro"
-new = "errors=remount-ro,acl,user_xattr,barrier=1"
-for line in fileinput.FileInput(fstab, inplace=True, backup='.bak'):
-    line.replace(old, new)
+for line in fileinput.FileInput("/etc/fstap", inplace=True, backup='.bak'):
+    line.replace("errors=remount-ro",
+                 "errors=remount-ro,acl,user_xattr,barrier=1")
 
 execProcess("clear")
 
