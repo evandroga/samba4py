@@ -73,6 +73,8 @@ for line in fileinput.FileInput("/etc/fstap", inplace=True, backup='.bak'):
     line.replace("errors=remount-ro",
                  "errors=remount-ro,acl,user_xattr,barrier=1")
 
+execProcess("mount -o remount /")
+
 execProcess("clear")
 
 with open('samba4py.log', 'ab') as log:
