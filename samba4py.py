@@ -53,18 +53,25 @@ print "********* PREENCHA AS INFORMAÇÕES A SEGUIR PARA CONTINUAR *********"
 print "*******************************************************************\n"
 
 nic = raw_input("Digite o nome da placa de rede a ser usada (ex: eth0): ")
-dns = raw_input("Digite um DNS que será usado para consultas externas (ex: 8.8.8.8): ")
-realm = raw_input("Digite o nome FQDN de domínio a ser usado (ex: exemplo.com): ")
+dns = raw_input("Digite um DNS que será usado para consultas externas "
+                "(ex: 8.8.8.8): ")
+realm = raw_input("Digite o nome FQDN de domínio a ser usado "
+                  "(ex: exemplo.com): ")
 domain = raw_input("Digite o nome curto do domínio (ex: exemplo): ")
 password = raw_input('Crie a senha do usuário "Administrator" do Domínio, \n'
-                     'contendo letras, números e caracteres especias (ex: Passw0rd): ')
+                     'contendo letras, números e caracteres especias '
+                     '(ex: Passw0rd): ')
 execProcess("clear")
 
 print "*******************************************************************"
 print "********* PROVISIONANDO CONTROLODAR DE DOMÍNIO PRINCIPAL **********"
 print "*******************************************************************\n"
 
-execProcess("samba-tool domain provision --server-role=dc --dns-backend=SAMBA_INTERNAL --realm="+realm+" --domain="+domain+" --adminpass="+password+" --option=\"interfaces=lo "+nic+"\" --option=\"bind interfaces only=yes\"")
+execProcess("samba-tool domain provision --server-role=dc "
+            "--dns-backend=SAMBA_INTERNAL --realm="+realm+" "
+            "--domain="+domain+" --adminpass="+password+" "
+            "--option=\"interfaces=lo "+nic+"\" "
+            "--option=\"bind interfaces only=yes\"")
 execProcess("clear")
 
 print "*******************************************************************"
