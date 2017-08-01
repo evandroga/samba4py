@@ -123,38 +123,13 @@ contents = f.readlines()
 f.close()
 
 #contents.insert(index, value)
-contents[8] = '    server services = s3fs rpc nbt wrepl ldap cldap kdc drepl winbind ntp_signd kcc dnsupdate dns\n'
+contents[8] = '        dns forwarder = '+dns+'\n'
+contents[9] = '        server services = s3fs rpc nbt wrepl ldap cldap kdc drepl winbind ntp_signd kcc dnsupdate dns\n'
 
 f = open('/etc/samba/smb.conf', "w")
 f.writelines(contents)
 f.close()
 
-"""
-with open('/etc/samba/smb.conf', 'r') as f:
-    data = f.readlines()
-    f.close()
-    total = sum(1 for _ in file)
-    for x in range(0, total):
-        if data[x] == '[netlogon]':
-            if data[x-1] == '':
-                data[x-1] = '    dns forwarder = '+dns+'\n    server ' \
-                                                       'services = ' \
-                                                   's3fs rpc nbt wrepl ldap ' \
-                                                   'cldap kdc drepl winbind ' \
-                                                   'ntp_signd kcc dnsupdate ' \
-                                                   'dns\n'
-            else:
-                data[x-1] += '\n    dns forwarder = '+dns+'\n    server ' \
-                                                          'services = s3fs ' \
-                                                          'rpc nbt wrepl ' \
-                                                          'ldap cldap kdc ' \
-                                                          'drepl winbind ' \
-                                                          'ntp_signd kcc ' \
-                                                          'dnsupdate dns\n'
-with open('/etc/samba/smb.conf', 'w') as f:
-    f.writelines(data)
-    f.close()
-"""
 execProcess("cp /var/lib/samba/private/krb5.conf /etc/")
 
 execProcess("/etc/init.d/samba restart")
