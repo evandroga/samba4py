@@ -123,8 +123,8 @@ contents = f.readlines()
 f.close()
 
 contents[8] = '        dns forwarder = '+dns+'\n'
-contents[9] = 'server services = s3fs rpc nbt wrepl ldap cldap kdc drepl ' \
-              'winbind ntp_signd kcc dnsupdate dns\n '
+contents[9] = '        server services = s3fs rpc nbt wrepl ldap cldap kdc ' \
+              'drepl winbind ntp_signd kcc dnsupdate dns\n '
 
 f = open('/etc/samba/smb.conf', "w")
 f.writelines(contents)
