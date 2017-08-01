@@ -9,4 +9,5 @@ Podeser feito de duas maneira:
 * chmod +x samba4py.py ; ./samba4py.py
 
 * python samba4py.py
+
 Em qualquer um dos modos de execução, basta seguir as orientações exebidas pelo script.
