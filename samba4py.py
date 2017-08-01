@@ -117,6 +117,19 @@ execProcess("samba-tool domain provision --server-role=dc "
             "--option=\"interfaces=lo "+nic+"\" "
             "--option=\"bind interfaces only=yes\" --function-level=2008_R2")
 
+n = sum(1 for line in open('/etc/samba/smb.conf'))
+f = open('/etc/samba/smb.conf', "r")
+contents = f.readlines()
+f.close()
+
+#contents.insert(index, value)
+contents[8] = '    server services = s3fs rpc nbt wrepl ldap cldap kdc drepl'
+
+f = open('/etc/samba/smb.conf', "w")
+f.write(contents)
+f.close()
+
+"""
 with open('/etc/samba/smb.conf', 'r') as f:
     data = f.readlines()
     f.close()
@@ -141,6 +154,7 @@ with open('/etc/samba/smb.conf', 'r') as f:
 with open('/etc/samba/smb.conf', 'w') as f:
     f.writelines(data)
     f.close()
+"""
 
 execProcess("/etc/init.d/samba restart")
 
