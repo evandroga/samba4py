@@ -155,6 +155,7 @@ with open('/etc/samba/smb.conf', 'w') as f:
     f.writelines(data)
     f.close()
 """
+execProcess("cp /var/lib/samba/private/krb5.conf /etc/")
 
 execProcess("/etc/init.d/samba restart")
 
