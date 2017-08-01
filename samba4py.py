@@ -3,7 +3,6 @@
 
 import subprocess
 import sys
-import fileinput
 
 def execProcess(command):
     """Executa um processo.
@@ -74,7 +73,8 @@ execProcess("ntpdate a.ntp.br")
 f = open('/etc/fstab', 'r')
 tempstr = f.read()
 f.close()
-tempstr = tempstr.replace("errors=remount-ro","errors=remount-ro,acl,user_xattr,barrier=1")
+tempstr = tempstr.replace("errors=remount-ro","errors=remount-ro,acl,"
+                                              "user_xattr,barrier=1")
 fout = open('/etc/fstab', 'w')
 fout.write(tempstr)
 fout.close()
@@ -82,6 +82,7 @@ fout.close()
 execProcess("mount -o remount /")
 
 execProcess("clear")
+#Fim
 
 with open('samba4py.log', 'ab') as log:
     log.write("03 - COLETANDO INFORMAÇÕS PARA PROVISIONAMENTO ...\n")
@@ -117,14 +118,13 @@ execProcess("samba-tool domain provision --server-role=dc "
             "--option=\"interfaces=lo "+nic+"\" "
             "--option=\"bind interfaces only=yes\" --function-level=2008_R2")
 
-#n = sum(1 for line in open('/etc/samba/smb.conf'))
 f = open('/etc/samba/smb.conf', "r")
 contents = f.readlines()
 f.close()
 
-#contents.insert(index, value)
 contents[8] = '        dns forwarder = '+dns+'\n'
-contents[9] = '        server services = s3fs rpc nbt wrepl ldap cldap kdc drepl winbind ntp_signd kcc dnsupdate dns\n'
+contents[9] = 'server services = s3fs rpc nbt wrepl ldap cldap kdc drepl ' \
+              'winbind ntp_signd kcc dnsupdate dns\n '
 
 f = open('/etc/samba/smb.conf', "w")
 f.writelines(contents)
