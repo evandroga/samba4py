@@ -117,7 +117,7 @@ execProcess("samba-tool domain provision --server-role=dc "
             "--option=\"interfaces=lo "+nic+"\" "
             "--option=\"bind interfaces only=yes\" --function-level=2008_R2")
 
-n = sum(1 for line in open('/etc/samba/smb.conf'))
+#n = sum(1 for line in open('/etc/samba/smb.conf'))
 f = open('/etc/samba/smb.conf', "r")
 contents = f.readlines()
 f.close()
