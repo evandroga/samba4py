@@ -70,8 +70,8 @@ execProcess("apt-get install samba winbind acl attr ntpdate -y ; rm "
 execProcess("ntpdate a.ntp.br")
 
 for line in fileinput.FileInput("/etc/fstap ", inplace=True):
-    line.replace("errors=remount-ro",
-                 "errors=remount-ro,acl,user_xattr,barrier=1")
+    print line.replace("errors=remount-ro",
+                       "errors=remount-ro,acl,user_xattr,barrier=1")
 
 execProcess("mount -o remount /")
 
