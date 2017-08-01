@@ -16,7 +16,7 @@ def execProcess(command):
     p = subprocess.Popen(command, shell=True, stderr=subprocess.PIPE)
     while True:
         out = p.stderr.read(1)
-        log = open('samba4py.log', 'ab')
+        log = open('samba4py.log', 'a')
         if out == '' and p.poll() != None:
             break
         if out != '':
@@ -69,7 +69,7 @@ execProcess("apt-get install samba winbind acl attr ntpdate -y ; rm "
 
 execProcess("ntpdate a.ntp.br")
 
-for line in fileinput.FileInput("/etc/fstap", inplace=True, backup='.bak'):
+for line in fileinput.FileInput("/etc/fstap", inplace=True, backup='_bak'):
     line.replace("errors=remount-ro",
                  "errors=remount-ro,acl,user_xattr,barrier=1")
 
