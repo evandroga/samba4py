@@ -69,6 +69,8 @@ execProcess("apt-get install samba winbind acl attr ntpdate -y ; rm "
 
 execProcess("ntpdate a.ntp.br")
 
+#Adiciona funcionalidades necessárias no arquivo "/etc/fstab" para receber o
+#provisionamento, e remonta a partição raiz "/"
 f = open('/etc/fstab', 'r')
 tempstr = f.read()
 f.close()
@@ -76,12 +78,6 @@ tempstr = tempstr.replace("errors=remount-ro","errors=remount-ro,acl,user_xattr,
 fout = open('/etc/fstab', 'w')
 fout.write(tempstr)
 fout.close()
-
-"""
-for line in fileinput.FileInput("/etc/fstap ", inplace=True):
-    print line.replace("errors=remount-ro",
-                       "errors=remount-ro,acl,user_xattr,barrier=1")
-"""
 
 execProcess("mount -o remount /")
 
@@ -121,8 +117,9 @@ execProcess("samba-tool domain provision --server-role=dc "
             "--option=\"interfaces=lo "+nic+"\" "
             "--option=\"bind interfaces only=yes\" --function-level=2008_R2")
 
-with open('/etc/samba/smb.conf', 'r') as file:
-    data = file.readlines()
+with open('/etc/samba/smb.conf', 'r') as f:
+    data = f.readlines()
+    f.close()
     total = sum(1 for _ in file)
     for x in range(0, total):
         if data[x] == '[netlogon]':
@@ -141,9 +138,9 @@ with open('/etc/samba/smb.conf', 'r') as file:
                                                           'drepl winbind ' \
                                                           'ntp_signd kcc ' \
                                                           'dnsupdate dns\n'
-with open('/etc/samba/smb.conf', 'w') as file:
-    file.writelines(data)
-    file.close()
+with open('/etc/samba/smb.conf', 'w') as f:
+    f.writelines(data)
+    f.close()
 
 execProcess("/etc/init.d/samba restart")
 
