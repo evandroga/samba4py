@@ -123,10 +123,10 @@ contents = f.readlines()
 f.close()
 
 #contents.insert(index, value)
-contents[8] = '    server services = s3fs rpc nbt wrepl ldap cldap kdc drepl'
+contents[8] = '    server services = s3fs rpc nbt wrepl ldap cldap kdc drepl winbind ntp_signd kcc dnsupdate dns\n'
 
 f = open('/etc/samba/smb.conf', "w")
-f.write(contents)
+f.writelines(contents)
 f.close()
 
 """
