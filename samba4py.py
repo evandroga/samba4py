@@ -15,14 +15,11 @@ def execProcess(command):
     p = subprocess.Popen(command, shell=True, stderr=subprocess.PIPE)
     while True:
         out = p.stderr.read(1)
-        log = open('samba4py.log', 'ab')
         if out == '' and p.poll() != None:
             break
         if out != '':
             sys.stdout.write(out)
             sys.stdout.flush()
-            log.write(out)
-        log.close()
 
 print "*******************************************************************"
 print "*******************************************************************"
@@ -51,7 +48,7 @@ print "*******************************************************************"
 print "******************** ATUALIZANDO O SISTEMA ... ********************"
 print "*******************************************************************\n"
 
-execProcess("apt-get update ; apt-get upgrade -y")
+execProcess("apt-get update ; apt-get upgrade -y >> samba4py.log")
 
 execProcess("clear")
 
@@ -63,10 +60,10 @@ print "*******************************************************************"
 print "******** PREPARANDO REQUIRIMENTOS E INSTALANDO PACOTES ... ********"
 print "*******************************************************************\n"
 
-execProcess("apt-get install samba winbind acl attr ntpdate -y ; rm "
-            "/etc/samba/smb.conf")
+execProcess("apt-get install samba winbind acl attr ntpdate -y >> samba4py.log; rm "
+            "/etc/samba/smb.conf >> samba4py.log")
 
-execProcess("ntpdate a.ntp.br")
+execProcess("ntpdate a.ntp.br >> samba4py.log")
 
 #Adiciona funcionalidades necessárias no arquivo "/etc/fstab" para receber o
 #provisionamento, e remonta a partição raiz "/"
@@ -79,7 +76,7 @@ fout = open('/etc/fstab', 'w')
 fout.write(tempstr)
 fout.close()
 
-execProcess("mount -o remount /")
+execProcess("mount -o remount / >> samba4py.log")
 
 execProcess("clear")
 #Fim
@@ -116,7 +113,7 @@ execProcess("samba-tool domain provision --server-role=dc "
             "--dns-backend=SAMBA_INTERNAL --realm="+realm+" "
             "--domain="+domain+" --adminpass="+password+" "
             "--option=\"interfaces=lo "+nic+"\" "
-            "--option=\"bind interfaces only=yes\" --function-level=2008_R2")
+            "--option=\"bind interfaces only=yes\" --function-level=2008_R2 >> samba4py.log")
 
 f = open('/etc/samba/smb.conf', "r")
 contents = f.readlines()
@@ -130,14 +127,14 @@ f = open('/etc/samba/smb.conf', "w")
 f.writelines(contents)
 f.close()
 
-execProcess("cp /var/lib/samba/private/krb5.conf /etc/")
+execProcess("cp /var/lib/samba/private/krb5.conf /etc/ >> samba4py.log")
 
-execProcess("/etc/init.d/samba restart")
+execProcess("/etc/init.d/samba restart >> samba4py.log")
 
 execProcess("clear")
 
 with open('samba4py.log', 'ab') as log:
-    log.write("***** SAMBA4 PROVISIONADO COM SUCESSO ! *****")
+    log.write("\n***** SAMBA4 PROVISIONADO COM SUCESSO ! *****\n")
     log.close()
 
 print "*******************************************************************"
