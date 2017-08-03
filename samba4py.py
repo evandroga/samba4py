@@ -3,15 +3,46 @@
 
 import subprocess
 import sys
+import shlex
+import logging
 
+def execProcess(command_line):
+    command_line_args = shlex.split(command_line)
+
+    logging.info('Subprocess: "' + command_line + '"')
+
+    try:
+        command_line_process = subprocess.Popen(
+            command_line_args,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.STDOUT,
+        )
+
+        process_output, _ =  command_line_process.communicate()
+
+        # process_output is now a string, not a file,
+        # you may want to do:
+        # process_output = StringIO(process_output)
+        logging.info(process_output)
+    except (OSError, subprocess.CalledProcessError) as exception:
+        logging.info('Exception occured: ' + str(exception))
+        logging.info('Subprocess failed')
+        return False
+    else:
+        # no exception was raised
+        logging.info('Subprocess finished')
+
+    return True
+
+"""
 def execProcess(command):
-    """Executa um processo.
+    \"""Executa um processo.
 
     Essa função recebe um comando no formato de uma string,
     e o executa no S.O. Caso ele seje validado, grava a saída
     em um arquivo de log e exibe no terminal do usuário em
     tempo real.
-    """
+    \"""
     p = subprocess.Popen(command, shell=True, stderr=subprocess.PIPE)
     while True:
         out = p.stderr.read(1)
@@ -20,6 +51,7 @@ def execProcess(command):
         if out != '':
             sys.stdout.write(out)
             sys.stdout.flush()
+"""
 
 print "*******************************************************************"
 print "*******************************************************************"
@@ -60,8 +92,8 @@ print "*******************************************************************"
 print "******** PREPARANDO REQUIRIMENTOS E INSTALANDO PACOTES ... ********"
 print "*******************************************************************\n"
 
-execProcess("apt-get install samba winbind acl attr ntpdate -y >> samba4py.log; rm "
-            "/etc/samba/smb.conf >> samba4py.log")
+execProcess("apt-get install samba winbind acl attr ntpdate -y >> "
+            "samba4py.log ; rm /etc/samba/smb.conf >> samba4py.log")
 
 execProcess("ntpdate a.ntp.br >> samba4py.log")
 
@@ -113,7 +145,8 @@ execProcess("samba-tool domain provision --server-role=dc "
             "--dns-backend=SAMBA_INTERNAL --realm="+realm+" "
             "--domain="+domain+" --adminpass="+password+" "
             "--option=\"interfaces=lo "+nic+"\" "
-            "--option=\"bind interfaces only=yes\" --function-level=2008_R2 >> samba4py.log")
+            "--option=\"bind interfaces only=yes\" --function-level=2008_R2 "
+            ">> samba4py.log")
 
 f = open('/etc/samba/smb.conf', "r")
 contents = f.readlines()
