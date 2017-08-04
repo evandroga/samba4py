@@ -3,9 +3,9 @@
 
 import subprocess
 import sys
-import shlex
 import logging
 
+"""
 def execProcess(command_line):
     command_line_args = shlex.split(command_line)
 
@@ -33,25 +33,33 @@ def execProcess(command_line):
         logging.info('Subprocess finished')
 
     return True
-
 """
+
 def execProcess(command):
-    \"""Executa um processo.
+    """Executa um processo.
 
     Essa função recebe um comando no formato de uma string,
     e o executa no S.O. Caso ele seje validado, grava a saída
     em um arquivo de log e exibe no terminal do usuário em
     tempo real.
-    \"""
-    p = subprocess.Popen(command, shell=True, stderr=subprocess.PIPE)
-    while True:
-        out = p.stderr.read(1)
-        if out == '' and p.poll() != None:
-            break
-        if out != '':
-            sys.stdout.write(out)
-            sys.stdout.flush()
-"""
+    """
+    try:
+        p = subprocess.Popen(command, shell=True, stderr=subprocess.PIPE)
+        while True:
+            out = p.stderr.read(1)
+            if out == '' and p.poll() != None:
+                break
+            if out != '':
+                logging.info(out)
+                sys.stdout.write(out)
+                sys.stdout.flush()        
+    except (OSError, subprocess.CalledProcessError) as exception:
+        logging.info('Exception occured: ' + str(exception))
+        logging.info('Subprocess failed')
+    else:
+        # no exception was raised
+        logging.info('Subprocess finished')
+    
 
 print "*******************************************************************"
 print "*******************************************************************"
