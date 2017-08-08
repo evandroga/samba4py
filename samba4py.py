@@ -88,7 +88,7 @@ print "*******************************************************************"
 print "******************** ATUALIZANDO O SISTEMA ... ********************"
 print "*******************************************************************\n"
 
-execProcess("apt-get update ; apt-get upgrade -y >> samba4py.log")
+execProcess("apt-get update ; apt-get upgrade -y")
 
 execProcess("clear")
 
@@ -100,10 +100,9 @@ print "*******************************************************************"
 print "******** PREPARANDO REQUIRIMENTOS E INSTALANDO PACOTES ... ********"
 print "*******************************************************************\n"
 
-execProcess("apt-get install samba winbind acl attr ntpdate -y >> "
-            "samba4py.log ; rm /etc/samba/smb.conf >> samba4py.log")
+execProcess("apt-get install samba winbind acl attr ntpdate -y ; rm /etc/samba/smb.conf")
 
-execProcess("ntpdate a.ntp.br >> samba4py.log")
+execProcess("ntpdate a.ntp.br")
 
 #Adiciona funcionalidades necessárias no arquivo "/etc/fstab" para receber o
 #provisionamento, e remonta a partição raiz "/"
@@ -116,7 +115,7 @@ fout = open('/etc/fstab', 'w')
 fout.write(tempstr)
 fout.close()
 
-execProcess("mount -o remount / >> samba4py.log")
+execProcess("mount -o remount /")
 
 execProcess("clear")
 #Fim
@@ -153,8 +152,7 @@ execProcess("samba-tool domain provision --server-role=dc "
             "--dns-backend=SAMBA_INTERNAL --realm="+realm+" "
             "--domain="+domain+" --adminpass="+password+" "
             "--option=\"interfaces=lo "+nic+"\" "
-            "--option=\"bind interfaces only=yes\" --function-level=2008_R2 "
-            ">> samba4py.log")
+            "--option=\"bind interfaces only=yes\" --function-level=2008_R2")
 
 f = open('/etc/samba/smb.conf', "r")
 contents = f.readlines()
@@ -162,15 +160,15 @@ f.close()
 
 contents[8] = '        dns forwarder = '+dns+'\n'
 contents[9] = '        server services = s3fs rpc nbt wrepl ldap cldap kdc ' \
-              'drepl winbind ntp_signd kcc dnsupdate dns\n '
+              'drepl winbind ntp_signd kcc dnsupdate dns\n'
 
 f = open('/etc/samba/smb.conf', "w")
 f.writelines(contents)
 f.close()
 
-execProcess("cp /var/lib/samba/private/krb5.conf /etc/ >> samba4py.log")
+execProcess("cp /var/lib/samba/private/krb5.conf /etc/")
 
-execProcess("/etc/init.d/samba restart >> samba4py.log")
+execProcess("/etc/init.d/samba restart")
 
 execProcess("clear")
 
