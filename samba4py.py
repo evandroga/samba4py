@@ -100,7 +100,8 @@ print "*******************************************************************"
 print "******** PREPARANDO REQUIRIMENTOS E INSTALANDO PACOTES ... ********"
 print "*******************************************************************\n"
 
-execProcess("apt-get install samba winbind acl attr ntpdate -y ; rm /etc/samba/smb.conf")
+execProcess("apt-get install samba winbind acl attr ntpdate -y ; "
+            "rm /etc/samba/smb.conf")
 
 execProcess("ntpdate a.ntp.br")
 
