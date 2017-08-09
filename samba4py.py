@@ -5,36 +5,6 @@ import subprocess
 import sys
 import logging
 
-"""
-def execProcess(command_line):
-    command_line_args = shlex.split(command_line)
-
-    logging.info('Subprocess: "' + command_line + '"')
-
-    try:
-        command_line_process = subprocess.Popen(
-            command_line_args,
-            stdout=subprocess.PIPE,
-            stderr=subprocess.STDOUT,
-        )
-
-        process_output, _ =  command_line_process.communicate()
-
-        # process_output is now a string, not a file,
-        # you may want to do:
-        # process_output = StringIO(process_output)
-        logging.info(process_output)
-    except (OSError, subprocess.CalledProcessError) as exception:
-        logging.info('Exception occured: ' + str(exception))
-        logging.info('Subprocess failed')
-        return False
-    else:
-        # no exception was raised
-        logging.info('Subprocess finished')
-
-    return True
-"""
-
 def execProcess(command):
     """Executa um processo.
 
