@@ -20,14 +20,13 @@ def execProcess(command):
             if out == '' and p.poll() != None:
                 break
             if out != '':
-                logging.info(out)
                 sys.stdout.write(out)
+                logging.info(out)
                 sys.stdout.flush()        
     except (OSError, subprocess.CalledProcessError) as exception:
         logging.info('Exception occured: ' + str(exception))
         logging.info('Subprocess failed')
     else:
-        # no exception was raised
         logging.info('Subprocess finished')
     
 
@@ -131,7 +130,7 @@ f.close()
 
 contents[8] = '        dns forwarder = '+dns+'\n'
 contents[9] = '        server services = s3fs rpc nbt wrepl ldap cldap kdc ' \
-              'drepl winbind ntp_signd kcc dnsupdate dns\n'
+              'drepl winbind ntp_signd kcc dnsupdate dns'
 
 f = open('/etc/samba/smb.conf', "w")
 f.writelines(contents)
