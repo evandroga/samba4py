@@ -5,6 +5,7 @@ import subprocess
 import sys
 import logging
 
+'''
 def execProcess(command):
     """Executa um processo.
 
@@ -28,6 +29,28 @@ def execProcess(command):
         logging.info('Subprocess failed')
     else:
         logging.info('Subprocess finished')
+'''        
+        
+def exeProcess(command):
+    process = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+
+    # Poll process for new output until finished
+    while True:
+        nextline = process.stdout.readline()
+        if nextline == '' and process.poll() is not None:
+            break
+        sys.stdout.write(nextline)
+        sys.stdout.flush()
+
+    output = process.communicate()[0]
+    exitCode = process.returncode
+
+    if (exitCode == 0):
+        logging.info(output)
+        return output
+    else:
+        raise ProcessException(command, exitCode, output)
+        logging.info('Exception occured: ' + str(ProcessException))
     
 
 print "*******************************************************************"
