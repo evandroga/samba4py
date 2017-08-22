@@ -9,7 +9,9 @@ logging.basicConfig(filename='samba4py.log',level=logging.DEBUG)
        
         
 def execProcess(command):
-    process = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+    process = subprocess.Popen(command, shell=True, 
+                               stdout=subprocess.PIPE, 
+                               stderr=subprocess.STDOUT)
 
     while True:
         nextline = process.stdout.readline()
