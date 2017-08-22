@@ -31,7 +31,7 @@ def execProcess(command):
         logging.info('Subprocess finished')
 '''        
         
-def exeProcess(command):
+def execProcess(command):
     process = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
 
     # Poll process for new output until finished
