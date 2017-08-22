@@ -18,13 +18,13 @@ def execProcess(command):
         if nextline == '' and process.poll() is not None:
             break
         sys.stdout.write(nextline)
+        logging.info(str(sys.stdout)+'\n')
         sys.stdout.flush()
 
     output = process.communicate()[0]
     exitCode = process.returncode
 
     if (exitCode == 0):
-        logging.info(output)
         return output
     else:
         raise ProcessException(command, exitCode, output)
