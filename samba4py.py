@@ -5,36 +5,12 @@ import subprocess
 import sys
 import logging
 
-'''
-def execProcess(command):
-    """Executa um processo.
-
-    Essa função recebe um comando no formato de uma string,
-    e o executa no S.O. Caso ele seje validado, grava a saída
-    em um arquivo de log e exibe no terminal do usuário em
-    tempo real.
-    """
-    try:
-        p = subprocess.Popen(command, shell=True, stderr=subprocess.PIPE)
-        while True:
-            out = p.stderr.read(1)
-            if out == '' and p.poll() != None:
-                break
-            if out != '':
-                sys.stdout.write(out)
-                logging.info(out)
-                sys.stdout.flush()        
-    except (OSError, subprocess.CalledProcessError) as exception:
-        logging.info('Exception occured: ' + str(exception))
-        logging.info('Subprocess failed')
-    else:
-        logging.info('Subprocess finished')
-'''        
+logging.basicConfig(filename='samba4py.log',level=logging.DEBUG)
+       
         
 def execProcess(command):
     process = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
 
-    # Poll process for new output until finished
     while True:
         nextline = process.stdout.readline()
         if nextline == '' and process.poll() is not None:
@@ -72,9 +48,7 @@ print "*******************************************************************\n"
 raw_input("Digite ENTER para continuar, ou Ctrl+C para cancelar ...")
 execProcess("clear")
 
-with open('samba4py.log', 'ab') as log:
-    log.write("01 - ATUALIZANDO O SISTEMA ...\n")
-    log.close()
+logging.info('01 - ATUALIZANDO O SISTEMA ...\n')
 
 print "*******************************************************************"
 print "******************** ATUALIZANDO O SISTEMA ... ********************"
@@ -84,9 +58,7 @@ execProcess("apt-get update ; apt-get upgrade -y")
 
 execProcess("clear")
 
-with open('samba4py.log', 'ab') as log:
-    log.write("02 - PREPARANDO REQUIRIMENTOS E INSTALANDO PACOTES ...\n")
-    log.close()
+logging.info('02 - PREPARANDO REQUIRIMENTOS E INSTALANDO PACOTES ...\n')
 
 print "*******************************************************************"
 print "******** PREPARANDO REQUIRIMENTOS E INSTALANDO PACOTES ... ********"
@@ -99,6 +71,8 @@ execProcess("ntpdate a.ntp.br")
 
 #Adiciona funcionalidades necessárias no arquivo "/etc/fstab" para receber o
 #provisionamento, e remonta a partição raiz "/"
+logging.info('02.1 - PREPARANDO E REMONTANDO A PARTIÇÃO RAIZ ...')
+
 f = open('/etc/fstab', 'r')
 tempstr = f.read()
 f.close()
@@ -111,11 +85,11 @@ fout.close()
 execProcess("mount -o remount /")
 
 execProcess("clear")
+
+logging.info('02.2 - PARTIÇÃO RAIZ PREPARADA E REMONTADA.')
 #Fim
 
-with open('samba4py.log', 'ab') as log:
-    log.write("03 - COLETANDO INFORMAÇÕS PARA PROVISIONAMENTO ...\n")
-    log.close()
+logging.info('03 - COLETANDO INFORMAÇÕS PARA PROVISIONAMENTO ...\n')
 
 print "*******************************************************************"
 print "********* PREENCHA AS INFORMAÇÕES A SEGUIR PARA CONTINUAR *********"
@@ -133,9 +107,7 @@ password = raw_input('Crie a senha do usuário "Administrator" do Domínio, \n'
 
 execProcess("clear")
 
-with open('samba4py.log', 'ab') as log:
-    log.write("03 - PROVISIONANDO CONTROLADOR DE DOMÍNIO PRINCIPAL ...\n")
-    log.close()
+logging.info('03 - PROVISIONANDO CONTROLADOR DE DOMÍNIO PRINCIPAL ...\n')
 
 print "*******************************************************************"
 print "********* PROVISIONANDO CONTROLADOR DE DOMÍNIO PRINCIPAL **********"
@@ -147,27 +119,34 @@ execProcess("samba-tool domain provision --server-role=dc "
             "--option=\"interfaces=lo "+nic+"\" "
             "--option=\"bind interfaces only=yes\" --function-level=2008_R2")
 
+# Prepara o smb.conf para usar todos os recursos necessários para o servidor
+# funcionar corretamente, já que o mesmo possui opções a mais que as default
+logging.info('03.1 - PREPARANDO O ARQUIVO SMB.CONF ...')
+
 f = open('/etc/samba/smb.conf', "r")
 contents = f.readlines()
 f.close()
 
 contents[8] = '        dns forwarder = '+dns+'\n'
 contents[9] = '        server services = s3fs rpc nbt wrepl ldap cldap kdc ' \
-              'drepl winbind ntp_signd kcc dnsupdate dns'
+              'drepl winbind ntp_signd kcc dnsupdate dns\n'
 
 f = open('/etc/samba/smb.conf', "w")
 f.writelines(contents)
 f.close()
 
+logging.info('03.2 - Arquivo smb.conf preparado com sucesso.')
+# Fim
+
+logging.info('03.3 - Instalando arquivo krb5.conf no sistema ...')
 execProcess("cp /var/lib/samba/private/krb5.conf /etc/")
 
+logging.info('03.4 - Reiniciando os processos samba ...')
 execProcess("/etc/init.d/samba restart")
 
 execProcess("clear")
 
-with open('samba4py.log', 'ab') as log:
-    log.write("\n***** SAMBA4 PROVISIONADO COM SUCESSO ! *****\n")
-    log.close()
+logging.info('\n***** SAMBA4 PROVISIONADO COM SUCESSO ! *****\n')
 
 print "*******************************************************************"
 print "*************** SAMBA4 PROVISIONADO COM SUCESSO ! *****************"
