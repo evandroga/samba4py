@@ -27,7 +27,7 @@ def execProcess(command):
     if (exitCode == 0):
         return output
     else:
-        raise ProcessException(command, exitCode, output)
+        raise Exception(command, exitCode, output)
         logging.warning(output)
     
 
