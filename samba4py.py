@@ -5,14 +5,15 @@ import subprocess
 import sys
 import logging
 
+
 #Prepara as configurações necessárias para quardar informações
 #em um arquivo de logg chamado 'samba4py.log', presente no
 #diretório raiz do script.
+
 formatter = '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
 logging.basicConfig(filename='samba4py.log', 
                    level=logging.DEBUG,
                    format=formatter)
-#Fim
 
 
 def execProcess(command):
@@ -38,8 +39,8 @@ def execProcess(command):
     if (exitCode == 0):
         return output
     else:
-        raise Exception(command, exitCode, output)
         logging.warning('Ocorreu uma exceção e o script foi interrompido.')
+        raise Exception(command, exitCode, output)
     
 
 print "*******************************************************************"
@@ -61,7 +62,27 @@ print "*******************************************************************\n"
 raw_input("Digite ENTER para continuar, ou Ctrl+C para cancelar ...")
 execProcess("clear")
 
-logging.info('01 - ATUALIZANDO O SISTEMA ...\n')
+logging.info('01 - COLETANDO INFORMAÇÕS PARA PROVISIONAMENTO ...\n')
+
+print "*******************************************************************"
+print "********* PREENCHA AS INFORMAÇÕES A SEGUIR PARA CONTINUAR *********"
+print "*******************************************************************\n"
+
+#Coleta as informações necessárias para iniciar o provisionamento do samba4
+
+nic = raw_input("Digite o nome da placa de rede a ser usada (ex: eth0): ")
+dns = raw_input("Digite um DNS que será usado para consultas externas "
+                "(ex: 8.8.8.8): ")
+realm = raw_input("Digite o nome FQDN de domínio a ser usado "
+                  "(ex: exemplo.com): ")
+domain = raw_input("Digite o nome curto do domínio (ex: exemplo): ")
+password = raw_input('Crie a senha do usuário "Administrator" do Domínio, \n'
+                     'contendo letras, números e caracteres especias '
+                     '(ex: Passw0rd): ')
+
+execProcess("clear")
+
+logging.info('02 - ATUALIZANDO O SISTEMA ...\n')
 
 print "*******************************************************************"
 print "******************** ATUALIZANDO O SISTEMA ... ********************"
@@ -71,7 +92,7 @@ execProcess("apt-get update ; apt-get upgrade -y")
 
 execProcess("clear")
 
-logging.info('02 - PREPARANDO REQUIRIMENTOS E INSTALANDO PACOTES ...\n')
+logging.info('03 - PREPARANDO REQUIRIMENTOS E INSTALANDO PACOTES ...\n')
 
 print "*******************************************************************"
 print "******** PREPARANDO REQUIRIMENTOS E INSTALANDO PACOTES ... ********"
@@ -84,7 +105,8 @@ execProcess("ntpdate a.ntp.br")
 
 #Adiciona funcionalidades necessárias no arquivo "/etc/fstab" para receber o
 #provisionamento, e remonta a partição raiz "/"
-logging.info('02.1 - PREPARANDO E REMONTANDO A PARTIÇÃO RAIZ ...')
+
+logging.info('03.1 - PREPARANDO E REMONTANDO A PARTIÇÃO RAIZ ...')
 f = open('/etc/fstab', 'r')
 tempstr = f.read()
 f.close()
@@ -96,30 +118,9 @@ fout.write(tempstr)
 fout.close()
 execProcess("mount -o remount /")
 execProcess("clear")
-logging.info('02.2 - PARTIÇÃO RAIZ PREPARADA E REMONTADA.')
-#Fim
+logging.info('03.2 - PARTIÇÃO RAIZ PREPARADA E REMONTADA.')
 
-logging.info('02.3 - COLETANDO INFORMAÇÕS PARA PROVISIONAMENTO ...\n')
-
-print "*******************************************************************"
-print "********* PREENCHA AS INFORMAÇÕES A SEGUIR PARA CONTINUAR *********"
-print "*******************************************************************\n"
-
-#Coleta as informações necessárias para iniciar o provisionamento do samba4
-nic = raw_input("Digite o nome da placa de rede a ser usada (ex: eth0): ")
-dns = raw_input("Digite um DNS que será usado para consultas externas "
-                "(ex: 8.8.8.8): ")
-realm = raw_input("Digite o nome FQDN de domínio a ser usado "
-                  "(ex: exemplo.com): ")
-domain = raw_input("Digite o nome curto do domínio (ex: exemplo): ")
-password = raw_input('Crie a senha do usuário "Administrator" do Domínio, \n'
-                     'contendo letras, números e caracteres especias '
-                     '(ex: Passw0rd): ')
-#Fim
-
-execProcess("clear")
-
-logging.info('03 - PROVISIONANDO CONTROLADOR DE DOMÍNIO PRINCIPAL ...\n')
+logging.info('04 - PROVISIONANDO CONTROLADOR DE DOMÍNIO PRINCIPAL ...\n')
 
 print "*******************************************************************"
 print "********* PROVISIONANDO CONTROLADOR DE DOMÍNIO PRINCIPAL **********"
@@ -127,16 +128,17 @@ print "*******************************************************************\n"
 
 #Realiza os comandos de provisionamento do samba4 com opções extras
 #de limitar a saída do servidor apenas pela placa de rede especificada
+
 execProcess("samba-tool domain provision --server-role=dc "
             "--dns-backend=SAMBA_INTERNAL --realm="+realm+" "
             "--domain="+domain+" --adminpass="+password+" "
             "--option=\"interfaces=lo "+nic+"\" "
             "--option=\"bind interfaces only=yes\" --function-level=2008_R2")
-#Fim
 
 #Prepara o smb.conf para usar todos os recursos necessários para o servidor
 #funcionar corretamente, já que o mesmo possui opções a mais que as default
-logging.info('03.1 - PREPARANDO O ARQUIVO SMB.CONF ...')
+
+logging.info('04.1 - PREPARANDO O ARQUIVO SMB.CONF ...')
 f = open('/etc/samba/smb.conf', "r")
 contents = f.readlines()
 f.close()
@@ -146,13 +148,17 @@ contents[9] = '        server services = s3fs rpc nbt wrepl ldap cldap kdc ' \
 f = open('/etc/samba/smb.conf', "w")
 f.writelines(contents)
 f.close()
-logging.info('03.2 - Arquivo smb.conf preparado com sucesso.')
-#Fim
+logging.info('04.2 - Arquivo smb.conf preparado com sucesso.')
 
-logging.info('03.3 - Instalando arquivo krb5.conf no sistema ...')
+#Instala o arquivo 'krb5.conf' gerado pelo provisionamento do samba4
+#no diretorio '/etc' do sistema.
+
+logging.info('04.3 - Instalando arquivo krb5.conf no sistema ...')
 execProcess("cp /var/lib/samba/private/krb5.conf /etc/")
 
-logging.info('03.4 - Reiniciando os processos samba ...')
+#Reinicia os processos do samba4
+
+logging.info('04.4 - Reiniciando os processos samba ...')
 execProcess("/etc/init.d/samba restart")
 
 execProcess("clear")
