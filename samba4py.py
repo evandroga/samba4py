@@ -28,7 +28,7 @@ def execProcess(command):
         return output
     else:
         raise Exception(command, exitCode, output)
-        logging.warning(output)
+        logging.warning('Ocorreu uma exceção e o script foi interrompido.')
     
 
 print "*******************************************************************"
@@ -67,7 +67,7 @@ print "******** PREPARANDO REQUIRIMENTOS E INSTALANDO PACOTES ... ********"
 print "*******************************************************************\n"
 
 execProcess("apt-get install samba winbind acl attr ntpdate -y ; "
-            "rm /etc/samba/smb.conf")
+            "rm -f /etc/samba/smb.conf")
 
 execProcess("ntpdate a.ntp.br")
 
