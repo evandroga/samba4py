@@ -6,7 +6,7 @@ import sys
 import logging
 
 formatter = '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
-logging.basicConfig(file='samba4py.log', 
+logging.basicConfig(filename='samba4py.log', 
                    level=logging.DEBUG,
                    format=formatter)
 
