@@ -88,7 +88,8 @@ logging.info('02.1 - PREPARANDO E REMONTANDO A PARTIÇÃO RAIZ ...')
 f = open('/etc/fstab', 'r')
 tempstr = f.read()
 f.close()
-tempstr = tempstr.replace("errors=remount-ro","errors=remount-ro,acl,"
+if not 'errors=remount-ro,acl,user_xattr,barrier=1' in tempstr:
+  tempstr = tempstr.replace("errors=remount-ro","errors=remount-ro,acl,"
                                               "user_xattr,barrier=1")
 fout = open('/etc/fstab', 'w')
 fout.write(tempstr)
