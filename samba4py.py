@@ -5,7 +5,8 @@ import subprocess
 import sys
 import logging
 
-'''
+logging.basicConfig(filename='samba4py.log',level=logging.DEBUG)
+
 root = logging.getLogger()
 root.setLevel(logging.DEBUG)
 
@@ -14,9 +15,6 @@ ch.setLevel(logging.DEBUG)
 formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 ch.setFormatter(formatter)
 root.addHandler(ch)
-'''
-
-logging.basicConfig(stream=sys.stdout,filename='samba4py.log',level=logging.DEBUG)
        
         
 def execProcess(command):
@@ -157,7 +155,7 @@ execProcess("/etc/init.d/samba restart")
 
 execProcess("clear")
 
-logging.info('\n***** SAMBA4 PROVISIONADO COM SUCESSO ! *****\n')
+logging.info('***** SAMBA4 PROVISIONADO COM SUCESSO ! *****\n')
 
 print "*******************************************************************"
 print "*************** SAMBA4 PROVISIONADO COM SUCESSO ! *****************"
