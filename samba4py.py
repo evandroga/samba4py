@@ -91,7 +91,7 @@ execProcess("clear")
 logging.info('02.2 - PARTIÇÃO RAIZ PREPARADA E REMONTADA.')
 #Fim
 
-logging.info('03 - COLETANDO INFORMAÇÕS PARA PROVISIONAMENTO ...\n')
+logging.info('02.3 - COLETANDO INFORMAÇÕS PARA PROVISIONAMENTO ...\n')
 
 print "*******************************************************************"
 print "********* PREENCHA AS INFORMAÇÕES A SEGUIR PARA CONTINUAR *********"
