@@ -27,8 +27,8 @@ def execProcess(command):
     if (exitCode == 0):
         return output
     else:
-        raise ProcessException(command, exitCode, output) as e
-        logging.warning(e)
+        raise ProcessException(command, exitCode, output)
+        logging.warning(output)
     
 
 print "*******************************************************************"
@@ -154,7 +154,7 @@ print "*******************************************************************"
 print "*************** SAMBA4 PROVISIONADO COM SUCESSO ! *****************"
 print "*******************************************************************"
 print "******* COLOQUE ESTAÇÕES DE TRABALHO NO DOMÍNIO USANDO ************"
-print "******* AS SEGUINTES INFORMAÇÕES: **************************"
+print "******* AS SEGUINTES INFORMAÇÕES: *********************************"
 print "*******************************************************************"
 print "*******************************************************************"
 print "DOMÍNIO: "+realm
