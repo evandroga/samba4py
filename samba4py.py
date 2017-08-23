@@ -5,7 +5,18 @@ import subprocess
 import sys
 import logging
 
-logging.basicConfig(filename='samba4py.log',level=logging.DEBUG)
+'''
+root = logging.getLogger()
+root.setLevel(logging.DEBUG)
+
+ch = logging.StreamHandler(sys.stdout)
+ch.setLevel(logging.DEBUG)
+formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+ch.setFormatter(formatter)
+root.addHandler(ch)
+'''
+
+logging.basicConfig(stream=sys.stdout,filename='samba4py.log',level=logging.DEBUG)
        
         
 def execProcess(command):
@@ -18,7 +29,6 @@ def execProcess(command):
         if nextline == '' and process.poll() is not None:
             break
         sys.stdout.write(nextline)
-        logging.info(str(sys.stdout)+'\n')
         sys.stdout.flush()
 
     output = process.communicate()[0]
@@ -28,7 +38,6 @@ def execProcess(command):
         return output
     else:
         raise ProcessException(command, exitCode, output)
-        logging.info('Exception occured: ' + str(ProcessException))
     
 
 print "*******************************************************************"
