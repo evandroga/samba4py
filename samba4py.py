@@ -5,35 +5,24 @@ import subprocess
 import sys
 import logging
 
+formatter = '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+logging.basicConfig(file='samba4py.log', 
+                   level=logging.DEBUG,
+                   format=formatter)
 
-root = logging.getLogger()
-root.setLevel(logging.DEBUG)
-formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-ch = logging.StreamHandler(sys.stdout)
-ch.setLevel(logging.DEBUG)
-ch.setFormatter(formatter)
-root.addHandler(ch)
-fh = logging.FileHandler('samba4py.log')
-fh.setLevel(logging.DEBUG)
-fh.setFormatter(formatter)
-root.addHandler(fh)
-       
-        
+
 def execProcess(command):
     process = subprocess.Popen(command, shell=True, 
                                stdout=subprocess.PIPE, 
                                stderr=subprocess.STDOUT)
-
     while True:
         nextline = process.stdout.readline()
         if nextline == '' and process.poll() is not None:
             break
         sys.stdout.write(nextline)
         sys.stdout.flush()
-
     output = process.communicate()[0]
     exitCode = process.returncode
-
     if (exitCode == 0):
         return output
     else:
@@ -59,7 +48,7 @@ print "*******************************************************************\n"
 raw_input("Digite ENTER para continuar, ou Ctrl+C para cancelar ...")
 execProcess("clear")
 
-root.info('01 - ATUALIZANDO O SISTEMA ...\n')
+logging.info('01 - ATUALIZANDO O SISTEMA ...\n')
 
 print "*******************************************************************"
 print "******************** ATUALIZANDO O SISTEMA ... ********************"
@@ -69,7 +58,7 @@ execProcess("apt-get update ; apt-get upgrade -y")
 
 execProcess("clear")
 
-root.info('02 - PREPARANDO REQUIRIMENTOS E INSTALANDO PACOTES ...\n')
+logging.info('02 - PREPARANDO REQUIRIMENTOS E INSTALANDO PACOTES ...\n')
 
 print "*******************************************************************"
 print "******** PREPARANDO REQUIRIMENTOS E INSTALANDO PACOTES ... ********"
@@ -82,7 +71,7 @@ execProcess("ntpdate a.ntp.br")
 
 #Adiciona funcionalidades necessárias no arquivo "/etc/fstab" para receber o
 #provisionamento, e remonta a partição raiz "/"
-root.info('02.1 - PREPARANDO E REMONTANDO A PARTIÇÃO RAIZ ...')
+logging.info('02.1 - PREPARANDO E REMONTANDO A PARTIÇÃO RAIZ ...')
 
 f = open('/etc/fstab', 'r')
 tempstr = f.read()
@@ -97,10 +86,10 @@ execProcess("mount -o remount /")
 
 execProcess("clear")
 
-root.info('02.2 - PARTIÇÃO RAIZ PREPARADA E REMONTADA.')
+logging.info('02.2 - PARTIÇÃO RAIZ PREPARADA E REMONTADA.')
 #Fim
 
-root.info('03 - COLETANDO INFORMAÇÕS PARA PROVISIONAMENTO ...\n')
+logging.info('03 - COLETANDO INFORMAÇÕS PARA PROVISIONAMENTO ...\n')
 
 print "*******************************************************************"
 print "********* PREENCHA AS INFORMAÇÕES A SEGUIR PARA CONTINUAR *********"
@@ -118,7 +107,7 @@ password = raw_input('Crie a senha do usuário "Administrator" do Domínio, \n'
 
 execProcess("clear")
 
-root.info('03 - PROVISIONANDO CONTROLADOR DE DOMÍNIO PRINCIPAL ...\n')
+logging.info('03 - PROVISIONANDO CONTROLADOR DE DOMÍNIO PRINCIPAL ...\n')
 
 print "*******************************************************************"
 print "********* PROVISIONANDO CONTROLADOR DE DOMÍNIO PRINCIPAL **********"
@@ -132,7 +121,7 @@ execProcess("samba-tool domain provision --server-role=dc "
 
 # Prepara o smb.conf para usar todos os recursos necessários para o servidor
 # funcionar corretamente, já que o mesmo possui opções a mais que as default
-root.info('03.1 - PREPARANDO O ARQUIVO SMB.CONF ...')
+logging.info('03.1 - PREPARANDO O ARQUIVO SMB.CONF ...')
 
 f = open('/etc/samba/smb.conf', "r")
 contents = f.readlines()
@@ -146,18 +135,18 @@ f = open('/etc/samba/smb.conf', "w")
 f.writelines(contents)
 f.close()
 
-root.info('03.2 - Arquivo smb.conf preparado com sucesso.')
+logging.info('03.2 - Arquivo smb.conf preparado com sucesso.')
 # Fim
 
-root.info('03.3 - Instalando arquivo krb5.conf no sistema ...')
+logging.info('03.3 - Instalando arquivo krb5.conf no sistema ...')
 execProcess("cp /var/lib/samba/private/krb5.conf /etc/")
 
-root.info('03.4 - Reiniciando os processos samba ...')
+logging.info('03.4 - Reiniciando os processos samba ...')
 execProcess("/etc/init.d/samba restart")
 
 execProcess("clear")
 
-root.info('***** SAMBA4 PROVISIONADO COM SUCESSO ! *****\n')
+logging.info('***** SAMBA4 PROVISIONADO COM SUCESSO ! *****\n')
 
 print "*******************************************************************"
 print "*************** SAMBA4 PROVISIONADO COM SUCESSO ! *****************"
