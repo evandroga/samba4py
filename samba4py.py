@@ -16,6 +16,22 @@ logging.basicConfig(filename='samba4py.log',
                    format=formatter)
 
 
+def checkProcess(package):
+    '''Busca por um processo rodando
+    
+    Função que busca se um processo está rodando no sistema e
+    retorna true (verdadeiro) caso esteja. No momento nem é
+    utilizada, mas em breve será implementada adequadamente
+    ao resto do código.
+    
+    '''
+    process = subprocess.Popen(('ps', 'aux'), stdout=subprocess.PIPE)
+    output = process.communicate()[0]
+    for line in output.split('\n'):
+        if package in line:
+            return true
+
+
 def execProcess(command):
     '''Executa um processo externo
     
