@@ -16,20 +16,29 @@ logging.basicConfig(filename='samba4py.log',
                    format=formatter)
 
 
-def checkProcess(package):
+def checkPackage(package, running=False):
     '''Busca por um processo rodando
     
-    Função que busca se um processo está rodando no sistema e
-    retorna true (verdadeiro) caso esteja. No momento nem é
-    utilizada, mas em breve será implementada adequadamente
-    ao resto do código.
+    Função que busca se um pacote está instalado no sistema e
+    retorna true (verdadeiro) caso esteja. Ou busca se o pacote
+    está rodando no sistema. No momento nem é utilizada, mas 
+    em breve será implementada adequadamente ao resto do código.
     
     '''
-    process = subprocess.Popen(('ps', 'aux'), stdout=subprocess.PIPE)
-    output = process.communicate()[0]
-    for line in output.split('\n'):
-        if package in line:
-            return true
+    if running:
+        process = subprocess.Popen(('ps', 'aux'), stdout=subprocess.PIPE)
+        output = process.communicate()[0]
+        for line in output.split('\n'):
+            if package in line:
+                return true
+    else:
+        process = subprocess.Popen(('dpkg-query', '-f',
+                                   '\'${binary:Package}\n\'', '-W'), 
+                                   stdout=subprocess.PIPE)
+        output = process.communicate()[0]
+        for line in output.split('\n'):
+            if package in line:
+                return true
 
 
 def execProcess(command):
