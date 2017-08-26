@@ -21,8 +21,7 @@ def checkPackage(package, running=False):
     
     Função que busca se um pacote está instalado no sistema e
     retorna true (verdadeiro) caso esteja. Ou busca se o pacote
-    está rodando no sistema. No momento nem é utilizada, mas 
-    em breve será implementada adequadamente ao resto do código.
+    está rodando no sistema. 
     
     '''
     if running:
