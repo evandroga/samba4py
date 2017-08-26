@@ -126,7 +126,7 @@ print "*******************************************************************\n"
 packages = []
 consulta = ['samba', 'winbind', 'acl', 'attr', 'ntpdate']
 for pacote in consulta:
-    if !checkPackage(pacote):
+    if not checkPackage(pacote):
         packages.append(pacote)
 
 if len(packages) > 0:
