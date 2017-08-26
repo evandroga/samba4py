@@ -87,7 +87,7 @@ print "*******************************************************************\n"
 raw_input("Digite ENTER para continuar, ou Ctrl+C para cancelar ...")
 execProcess("clear")
 
-logging.info('01 - COLETANDO INFORMAÇÕS PARA PROVISIONAMENTO ...\n')
+logging.info('01 - COLETANDO INFORMAÇÕS NECESSÁRIAS ...\n')
 
 print "*******************************************************************"
 print "********* PREENCHA AS INFORMAÇÕES A SEGUIR PARA CONTINUAR *********"
@@ -113,7 +113,7 @@ print "*******************************************************************"
 print "******************** ATUALIZANDO O SISTEMA ... ********************"
 print "*******************************************************************\n"
 
-execProcess("apt-get update ; apt-get upgrade -y")
+execProcess("apt-get update && apt-get upgrade -y")
 
 execProcess("clear")
 
@@ -123,8 +123,17 @@ print "*******************************************************************"
 print "******** PREPARANDO REQUIRIMENTOS E INSTALANDO PACOTES ... ********"
 print "*******************************************************************\n"
 
-execProcess("apt-get install samba winbind acl attr ntpdate -y ; "
-            "rm -f /etc/samba/smb.conf")
+packages = []
+consulta = ['samba', 'winbind', 'acl', 'attr', 'ntpdate']
+for pacote in consulta:
+    if !checkPackage(pacote):
+        packages.append(pacote)
+
+if len(packages) > 0:
+    for p in packages:
+        execProcess("apt-get install "+p+" -y")
+
+execProcess("rm -f /etc/samba/smb.conf")
 
 execProcess("ntpdate a.ntp.br")
 
@@ -136,8 +145,8 @@ f = open('/etc/fstab', 'r')
 tempstr = f.read()
 f.close()
 if not 'errors=remount-ro,acl,user_xattr,barrier=1' in tempstr:
-  tempstr = tempstr.replace("errors=remount-ro","errors=remount-ro,acl,"
-                                              "user_xattr,barrier=1")
+    tempstr = tempstr.replace("errors=remount-ro","errors=remount-ro,acl,"
+                                                  "user_xattr,barrier=1")
 fout = open('/etc/fstab', 'w')
 fout.write(tempstr)
 fout.close()
