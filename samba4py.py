@@ -86,7 +86,25 @@ print "*******************************************************************\n"
 raw_input("Digite ENTER para continuar, ou Ctrl+C para cancelar ...")
 execProcess("clear")
 
-logging.info('01 - COLETANDO INFORMAÇÕS NECESSÁRIAS ...\n')
+logging.info('01 - VERIFICANDO SE O SAMBA 4 JÁ EXISTE NO SISTEMA ...\n')
+
+if checkPackage(samba):
+    process = subprocess.Popen(('smbclient',
+                                '-L',
+                                'localhost',
+                                '-U%',
+                                '|',
+                                'grep',
+                                'netlogon'), stdout=subprocess.PIPE)
+    exitCode = process.returncode
+    if (exitCode == 0):
+        print "Parece que o Samba 4 já está instalado e provisionado."
+        print "O script samba4py não poderá continuar. Se quiser um"
+        print "novo provisionamento, limpe ou desinstale o samba 4.\n"
+        raw_input("Digite qualquer telca ou Ctrl+C para sair ...")
+        sys.exit(1)
+
+logging.info('01.1 - COLETANDO INFORMAÇÕS NECESSÁRIAS ...\n')
 
 print "*******************************************************************"
 print "********* PREENCHA AS INFORMAÇÕES A SEGUIR PARA CONTINUAR *********"
