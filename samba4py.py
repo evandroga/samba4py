@@ -29,7 +29,7 @@ def checkPackage(package, running=False):
         output = process.communicate()[0]
         for line in output.split('\n'):
             if package in line:
-                return true
+                return True
     else:
         process = subprocess.Popen(('dpkg-query', '-f',
                                    '\'${binary:Package}\n\'', '-W'), 
@@ -37,7 +37,7 @@ def checkPackage(package, running=False):
         output = process.communicate()[0]
         for line in output.split('\n'):
             if package in line:
-                return true
+                return True
 
 
 def execProcess(command):
