@@ -88,7 +88,13 @@ execProcess("clear")
 
 logging.info('01 - VERIFICANDO SE O SAMBA 4 JÁ EXISTE NO SISTEMA ...\n')
 
+print "*******************************************************************"
+print "*** CONFERINDO SE SAMBA 4 JÁ ESTÁ INSTALADO E PROVISIONADO ... ****"
+print "*******************************************************************\n"
+
 if checkPackage('samba'):
+    if not checkPackage('smbclient'):
+        execProcess("apt-get install smbclient -y")
     process = subprocess.Popen(('smbclient',
                                 '-L',
                                 'localhost',
