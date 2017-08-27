@@ -88,7 +88,7 @@ execProcess("clear")
 
 logging.info('01 - VERIFICANDO SE O SAMBA 4 JÁ EXISTE NO SISTEMA ...\n')
 
-if checkPackage(samba):
+if checkPackage('samba'):
     process = subprocess.Popen(('smbclient',
                                 '-L',
                                 'localhost',
