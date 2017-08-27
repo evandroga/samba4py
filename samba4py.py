@@ -140,14 +140,9 @@ print "*******************************************************************"
 print "******** PREPARANDO REQUIRIMENTOS E INSTALANDO PACOTES ... ********"
 print "*******************************************************************\n"
 
-packages = []
-consulta = ['samba', 'winbind', 'acl', 'attr', 'ntpdate']
-for pacote in consulta:
-    if not checkPackage(pacote):
-        packages.append(pacote)
-
-if len(packages) > 0:
-    for p in packages:
+pacotes = ['samba', 'winbind', 'acl', 'attr', 'ntpdate']
+for p in pacotes:
+    if not checkPackage(p):
         execProcess("apt-get install "+p+" -y")
 
 execProcess("rm -f /etc/samba/smb.conf")
@@ -167,8 +162,11 @@ if not 'errors=remount-ro,acl,user_xattr,barrier=1' in tempstr:
 fout = open('/etc/fstab', 'w')
 fout.write(tempstr)
 fout.close()
+
 execProcess("mount -o remount /")
+
 execProcess("clear")
+
 logging.info('03.2 - PARTIÇÃO RAIZ PREPARADA E REMONTADA.')
 
 logging.info('04 - PROVISIONANDO CONTROLADOR DE DOMÍNIO PRINCIPAL ...\n')
@@ -190,6 +188,7 @@ execProcess("samba-tool domain provision --server-role=dc "
 #funcionar corretamente, já que o mesmo possui opções a mais que as default
 
 logging.info('04.1 - PREPARANDO O ARQUIVO SMB.CONF ...')
+
 f = open('/etc/samba/smb.conf', "r")
 contents = f.readlines()
 f.close()
@@ -199,17 +198,20 @@ contents[9] = '        server services = s3fs rpc nbt wrepl ldap cldap kdc ' \
 f = open('/etc/samba/smb.conf', "w")
 f.writelines(contents)
 f.close()
+
 logging.info('04.2 - Arquivo smb.conf preparado com sucesso.')
 
 #Instala o arquivo 'krb5.conf' gerado pelo provisionamento do samba4
 #no diretorio '/etc' do sistema.
 
 logging.info('04.3 - Instalando arquivo krb5.conf no sistema ...')
+
 execProcess("cp /var/lib/samba/private/krb5.conf /etc/")
 
 #Reinicia os processos do samba4
 
 logging.info('04.4 - Reiniciando os processos samba ...')
+
 execProcess("/etc/init.d/samba restart")
 
 execProcess("clear")
