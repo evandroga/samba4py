@@ -103,7 +103,6 @@ print "*******************************************************************\n"
 if checkPackage('samba'):
     if not checkPackage('smbclient'):
         execProcess("apt-get install smbclient -y")
-    cmd = "smbclient -L localhost -U% | grep netlogon"
     process = subprocess.Popen(('smbclient', 
                                '-L', 
                                'localhost', 
@@ -111,10 +110,15 @@ if checkPackage('samba'):
     out = process.communicate()[0]
     for line in out.split('\n'):
         if 'netlogon' in line:
-            print "Parece que o Samba 4 já está instalado e provisionado."
-            print "O script samba4py não poderá continuar. Se quiser um"
-            print "novo provisionamento, limpe ou desinstale o samba 4.\n"
-            raw_input("Digite qualquer telca ou Ctrl+C para sair ...")
+            execProcess("clear")
+            print "*******************************************************************"
+            print "*******************************************************************"
+            print "****** Parece que o Samba 4 já está instalado e provisionado. *****"
+            print "************** O script samba4py não poderá continuar. ************"
+            print "*** Para um novoprovisionamento, limpe ou desinstale o samba 4. ***"
+            print "*******************************************************************"
+            print "*******************************************************************\n"            
+            raw_input("Pressione qualquer tecla para sair ...")
             sys.exit(1)
 
 logging.info('01.1 - COLETANDO INFORMAÇÕS NECESSÁRIAS ...\n')
