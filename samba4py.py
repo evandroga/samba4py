@@ -162,15 +162,15 @@ execProcess("ntpdate a.ntp.br")
 #provisionamento, e remonta a partição raiz "/"
 
 logging.info('03.1 - PREPARANDO E REMONTANDO A PARTIÇÃO RAIZ ...')
-f = open('/etc/fstab', 'r')
-tempstr = f.read()
-f.close()
-if not 'errors=remount-ro,acl,user_xattr,barrier=1' in tempstr:
-    tempstr = tempstr.replace("errors=remount-ro","errors=remount-ro,acl,"
-                                                  "user_xattr,barrier=1")
-fout = open('/etc/fstab', 'w')
-fout.write(tempstr)
-fout.close()
+
+with open('/etc/fstab', 'r') as fr, open('/etc/fstab', 'w') as fw:
+    tempstr = fr.read()
+    fr.close()
+    if not 'errors=remount-ro,acl,user_xattr,barrier=1' in tempstr:
+        tempstr = tempstr.replace("errors=remount-ro","errors=remount-ro,acl,"
+                                                      "user_xattr,barrier=1")
+    fw.write(tempstr)
+    fw.close()
 
 execProcess("mount -o remount /")
 
@@ -195,20 +195,18 @@ execProcess("samba-tool domain provision --server-role=dc "
 
 #Prepara o smb.conf para usar todos os recursos necessários para o servidor
 #funcionar corretamente, já que o mesmo possui opções a mais que as default
-#
-#TODO:for x in range(0, len(contents)): pass
 
 logging.info('04.1 - PREPARANDO O ARQUIVO SMB.CONF ...')
 
-f = open('/etc/samba/smb.conf', "r")
-contents = f.readlines()
-f.close()
-contents[8] = '        dns forwarder = '+dns+'\n'
-contents[9] = '        server services = s3fs rpc nbt wrepl ldap cldap kdc ' \
-              'drepl winbind ntp_signd kcc dnsupdate dns\n\n'
-f = open('/etc/samba/smb.conf', "w")
-f.writelines(contents)
-f.close()
+with open('/etc/samba/smb.conf', "r") as fr, open('/etc/samba/smb.conf', "w") as fw:
+    contents = fr.readlines()
+    fr.close()
+    for x in range(len(contents)):
+        if contents[x] == '[netlogon]':
+            n = x -1
+            contents[n] = '        dns forwarder = '+dns+'\n        server services = s3fs rpc nbt wrepl ldap cldap kdc drepl winbind ntp_signd kcc dnsupdate dns\n\n'
+    fw.writelines(contents)
+    fw.close()
 
 logging.info('04.2 - Arquivo smb.conf preparado com sucesso.')
 
