@@ -103,13 +103,8 @@ print "*******************************************************************\n"
 if checkPackage('samba'):
     if not checkPackage('smbclient'):
         execProcess("apt-get install smbclient -y")
-    process = subprocess.Popen(('smbclient', 
-                                '-L', 
-                                'localhost', 
-                                '-U%', 
-                                '|', 
-                                'grep', 
-                                'netlogon'), stdout=subprocess.PIPE)
+    process = subprocess.Popen("smbclient -L localhost -U% | grep netlogon", 
+                               stdout=subprocess.PIPE)
     exitCode = process.returncode
     if (exitCode == 0):
         print "Parece que o Samba 4 já está instalado e provisionado."
