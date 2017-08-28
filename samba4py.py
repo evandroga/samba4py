@@ -20,24 +20,34 @@ def checkPackage(package, running=False):
     '''Busca por um processo rodando
     
     Função que busca se um pacote está instalado no sistema e
-    retorna true (verdadeiro) caso esteja. Ou busca se o pacote
-    está rodando no sistema. 
+    depois pesquisa se o mesmo está rodando, retornando True
+    (Verdadeiro) caso esteja. Se apenas precisar saber se um
+    pacote está instalado, basta suprimir o argumento "running".
     
     '''
     if running:
-        process = subprocess.Popen(('ps', 'aux'), stdout=subprocess.PIPE)
-        output = process.communicate()[0]
-        for line in output.split('\n'):
-            if package in line:
-                return True
-    else:
-        process = subprocess.Popen(('dpkg-query', '-f',
+        p1 = subprocess.Popen(('dpkg-query', '-f',
                                    '\'${binary:Package}\n\'', '-W'), 
                                    stdout=subprocess.PIPE)
-        output = process.communicate()[0]
-        for line in output.split('\n'):
+        o1 = process.communicate()[0]
+        for line in o1.split('\n'):
             if package in line:
-                return True
+                p2 = subprocess.Popen(('ps', 'aux'), 
+                                      stdout=subprocess.PIPE)
+                o2 = process.communicate()[0]
+                for line in o2.split('\n'):
+                    if package in line:
+                        return True
+                    return False
+            return False    
+    process = subprocess.Popen(('dpkg-query', '-f',
+                               '\'${binary:Package}\n\'', '-W'), 
+                               stdout=subprocess.PIPE)
+    output = process.communicate()[0]
+    for line in output.split('\n'):
+        if package in line:
+            return True
+        return False
 
 
 def execProcess(command):
