@@ -95,12 +95,12 @@ print "*******************************************************************\n"
 if checkPackage('samba'):
     if not checkPackage('smbclient'):
         execProcess("apt-get install smbclient -y")
-    process = subprocess.Popen(('smbclient',
-                                '-L',
-                                'localhost',
-                                '-U%',
-                                '|',
-                                'grep',
+    process = subprocess.Popen(('smbclient', 
+                                '-L', 
+                                'localhost', 
+                                '-U%', 
+                                '|', 
+                                'grep', 
                                 'netlogon'), stdout=subprocess.PIPE)
     exitCode = process.returncode
     if (exitCode == 0):
