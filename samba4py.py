@@ -202,6 +202,8 @@ execProcess("samba-tool domain provision --server-role=dc "
 
 #Prepara o smb.conf para usar todos os recursos necessários para o servidor
 #funcionar corretamente, já que o mesmo possui opções a mais que as default
+#
+#TODO:for x in range(0, len(contents)): pass
 
 logging.info('04.1 - PREPARANDO O ARQUIVO SMB.CONF ...')
 
