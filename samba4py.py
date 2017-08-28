@@ -38,16 +38,14 @@ def checkPackage(package, running=False):
                 for line in o2.split('\n'):
                     if package in line:
                         return True
-                    return False
-            return False    
-    process = subprocess.Popen(('dpkg-query', '-f',
-                               '\'${binary:Package}\n\'', '-W'), 
-                               stdout=subprocess.PIPE)
-    output = process.communicate()[0]
-    for line in output.split('\n'):
-        if package in line:
-            return True
-        return False
+    else:
+        process = subprocess.Popen(('dpkg-query', '-f',
+                                   '\'${binary:Package}\n\'', '-W'), 
+                                   stdout=subprocess.PIPE)
+        output = process.communicate()[0]
+        for line in output.split('\n'):
+            if package in line:
+                return True
 
 
 def execProcess(command):
