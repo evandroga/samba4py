@@ -187,12 +187,13 @@ execProcess("ntpdate a.ntp.br")
 
 logging.info('03.1 - PREPARANDO E REMONTANDO A PARTIÇÃO RAIZ ...')
 
-with open('/etc/fstab', 'r') as fr, open('/etc/fstab', 'w') as fw:
+with open('/etc/fstab', 'r') as fr:
     tempstr = fr.read()
     fr.close()
     if not 'errors=remount-ro,acl,user_xattr,barrier=1' in tempstr:
         tempstr = tempstr.replace("errors=remount-ro","errors=remount-ro,acl,"
                                                       "user_xattr,barrier=1")
+with open('/etc/fstab', 'w') as fw:        
     fw.write(tempstr)
     fw.close()
 
