@@ -29,12 +29,12 @@ def checkPackage(package, running=False):
         p1 = subprocess.Popen(('dpkg-query', '-f',
                                    '\'${binary:Package}\n\'', '-W'), 
                                    stdout=subprocess.PIPE)
-        o1 = process.communicate()[0]
+        o1 = p1.communicate()[0]
         for line in o1.split('\n'):
             if package in line:
                 p2 = subprocess.Popen(('ps', 'aux'), 
                                       stdout=subprocess.PIPE)
-                o2 = process.communicate()[0]
+                o2 = p2.communicate()[0]
                 for line in o2.split('\n'):
                     if package in line:
                         return True
