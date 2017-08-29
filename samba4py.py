@@ -228,13 +228,12 @@ logging.info('04.1 - PREPARANDO O ARQUIVO SMB.CONF ...')
 with open('/etc/samba/smb.conf', "r") as fr:        
     contents = fr.readlines()
     fr.close()
-    for x in range(len(contents)):
-        if contents[x] == '[netlogon]':
-            n = x -1
-            contents[n] = '        dns forwarder = {0}\n'.format(dns)
-            contents[x] = '        server services = s3fs rpc nbt wrepl ldap' \
-                          ' cldap kdc drepl winbind ntp_signd kcc dnsupdate ' \
-                          'dns\n\n'
+
+contents[8] = '        dns forwarder = {0}\n'.format(dns)
+contents[9] = '        server services = s3fs rpc nbt wrepl ldap' \
+              ' cldap kdc drepl winbind ntp_signd kcc dnsupdate ' \
+              'dns\n\n'
+
 with open('/etc/samba/smb.conf', "w") as fw:
     fw.writelines(contents)
     fw.close()
