@@ -132,6 +132,8 @@ if checkPackage('samba'):
             raw_input("Pressione qualquer tecla para sair ...")
             sys.exit(1)
 
+execProcess("clear")
+
 logging.info('01.1 - COLETANDO INFORMAÇÕS NECESSÁRIAS ...\n')
 
 print "*******************************************************************"
@@ -223,8 +225,7 @@ execProcess("samba-tool domain provision --server-role=dc "
 
 logging.info('04.1 - PREPARANDO O ARQUIVO SMB.CONF ...')
 
-with open('/etc/samba/smb.conf', "r") as fr,\
-        open('/etc/samba/smb.conf', "w") as fw:
+with open('/etc/samba/smb.conf', "r") as fr:        
     contents = fr.readlines()
     fr.close()
     for x in range(len(contents)):
@@ -234,6 +235,7 @@ with open('/etc/samba/smb.conf', "r") as fr,\
                           '        server services = s3fs rpc nbt wrepl ldap' \
                           ' cldap kdc drepl winbind ntp_signd kcc dnsupdate ' \
                           'dns\n\n'.format(dns)
+with open('/etc/samba/smb.conf', "w") as fw:
     fw.writelines(contents)
     fw.close()
 
