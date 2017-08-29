@@ -231,10 +231,10 @@ with open('/etc/samba/smb.conf', "r") as fr:
     for x in range(len(contents)):
         if contents[x] == '[netlogon]':
             n = x -1
-            contents[n] = '        dns forwarder = {0}\n' \
-                          '        server services = s3fs rpc nbt wrepl ldap' \
+            contents[n] = '        dns forwarder = {0}\n'.format(dns)
+            contents[x] = '        server services = s3fs rpc nbt wrepl ldap' \
                           ' cldap kdc drepl winbind ntp_signd kcc dnsupdate ' \
-                          'dns\n\n'.format(dns)
+                          'dns\n\n'
 with open('/etc/samba/smb.conf', "w") as fw:
     fw.writelines(contents)
     fw.close()
