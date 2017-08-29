@@ -96,6 +96,10 @@ execProcess("clear")
 
 logging.info('01 - VERIFICANDO SE O SAMBA 4 JÁ EXISTE NO SISTEMA ...\n')
 
+#Antes de mais nada, é feita uma busca pelo sistema se o pacote samba 4 já está
+#instalado. Caso esteja, é feito um teste simples para saber se já está provi-
+#sionado como DC e se estiver aborta a execução do script.
+
 print "*******************************************************************"
 print "*** CONFERINDO SE SAMBA 4 JÁ ESTÁ INSTALADO E PROVISIONADO ... ****"
 print "*******************************************************************\n"
@@ -111,13 +115,20 @@ if checkPackage('samba'):
     for line in out.split('\n'):
         if 'netlogon' in line:
             execProcess("clear")
-            print "*******************************************************************"
-            print "*******************************************************************"
-            print "****** Parece que o Samba 4 já está instalado e provisionado. *****"
-            print "************** O script samba4py não poderá continuar. ************"
-            print "*** Para um novoprovisionamento, limpe ou desinstale o samba 4. ***"
-            print "*******************************************************************"
-            print "*******************************************************************\n"            
+            print "********************************************************" \
+                  "***********"
+            print "********************************************************" \
+                  "***********"
+            print "****** Parece que o Samba 4 já está instalado e " \
+                  "provisionado. *****"
+            print "************** O script samba4py não poderá continuar. " \
+                  "************"
+            print "*** Para um novoprovisionamento, limpe ou desinstale o " \
+                  "samba 4. ***"
+            print "********************************************************" \
+                  "***********"
+            print "********************************************************" \
+                  "***********\n"
             raw_input("Pressione qualquer tecla para sair ...")
             sys.exit(1)
 
@@ -143,6 +154,8 @@ execProcess("clear")
 
 logging.info('02 - ATUALIZANDO O SISTEMA ...\n')
 
+#Verifica e atualiza, se necessário, os pacotes do sistema antes de continuar.
+
 print "*******************************************************************"
 print "******************** ATUALIZANDO O SISTEMA ... ********************"
 print "*******************************************************************\n"
@@ -150,6 +163,9 @@ print "*******************************************************************\n"
 execProcess("apt-get update && apt-get upgrade -y")
 
 execProcess("clear")
+
+#Instala o samba4 e demais pacotes necessários para o provisionamento, bem
+#como sicroniza a hora local com uma hora de internet, de acordo a NTP Brasil.
 
 logging.info('03 - PREPARANDO REQUIRIMENTOS E INSTALANDO PACOTES ...\n')
 
@@ -206,13 +222,17 @@ execProcess("samba-tool domain provision --server-role=dc "
 
 logging.info('04.1 - PREPARANDO O ARQUIVO SMB.CONF ...')
 
-with open('/etc/samba/smb.conf', "r") as fr, open('/etc/samba/smb.conf', "w") as fw:
+with open('/etc/samba/smb.conf', "r") as fr,\
+        open('/etc/samba/smb.conf', "w") as fw:
     contents = fr.readlines()
     fr.close()
     for x in range(len(contents)):
         if contents[x] == '[netlogon]':
             n = x -1
-            contents[n] = '        dns forwarder = '+dns+'\n        server services = s3fs rpc nbt wrepl ldap cldap kdc drepl winbind ntp_signd kcc dnsupdate dns\n\n'
+            contents[n] = '        dns forwarder = {0}\n' \
+                          '        server services = s3fs rpc nbt wrepl ldap' \
+                          ' cldap kdc drepl winbind ntp_signd kcc dnsupdate ' \
+                          'dns\n\n'.format(dns)
     fw.writelines(contents)
     fw.close()
 
