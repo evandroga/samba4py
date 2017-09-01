@@ -189,15 +189,13 @@ execProcess("ntpdate a.ntp.br")
 
 logging.info('03.1 - PREPARANDO E REMONTANDO A PARTIÇÃO RAIZ ...')
 
-with open('/etc/fstab', 'r') as fr:
-    tempstr = fr.read()
-    fr.close()
+with open('/etc/fstab', 'r+') as f:
+    tempstr = f.read()
     if not 'errors=remount-ro,acl,user_xattr,barrier=1' in tempstr:
         tempstr = tempstr.replace("errors=remount-ro","errors=remount-ro,acl,"
-                                                      "user_xattr,barrier=1")
-with open('/etc/fstab', 'w') as fw:        
-    fw.write(tempstr)
-    fw.close()
+                                                      "user_xattr,barrier=1")      
+    f.write(tempstr)
+    f.close()
 
 execProcess("mount -o remount /")
 
@@ -225,18 +223,14 @@ execProcess("samba-tool domain provision --server-role=dc "
 
 logging.info('04.1 - PREPARANDO O ARQUIVO SMB.CONF ...')
 
-with open('/etc/samba/smb.conf', "r") as fr:        
-    contents = fr.readlines()
-    fr.close()
-
-contents[8] = '        dns forwarder = {0}\n'.format(dns)
-contents[9] = '        server services = s3fs rpc nbt wrepl ldap' \
-              ' cldap kdc drepl winbind ntp_signd kcc dnsupdate ' \
-              'dns\n\n'
-
-with open('/etc/samba/smb.conf', "w") as fw:
-    fw.writelines(contents)
-    fw.close()
+with open('/etc/samba/smb.conf', "r+") as f:        
+    contents = f.readlines()
+    contents[8] = '        dns forwarder = {0}\n'.format(dns)
+    contents[9] = '        server services = s3fs rpc nbt wrepl ldap' \
+                  ' cldap kdc drepl winbind ntp_signd kcc dnsupdate ' \
+                  'dns\n\n'
+    f.writelines(contents)
+    f.close()
 
 logging.info('04.2 - Arquivo smb.conf preparado com sucesso.')
 
