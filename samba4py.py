@@ -196,8 +196,7 @@ with open('/etc/fstab', 'r+') as f:
                                                       "user_xattr,barrier=1")      
     f.write(tempstr)
     f.close()
-
-execProcess("mount -o remount /")
+    execProcess("mount -o remount /")
 
 execProcess("clear")
 
